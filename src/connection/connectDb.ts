@@ -11,7 +11,6 @@ const connectDatabase = () => {
     if (err) throw err;
     console.log("connected");
   });
-
   return con;
 };
 

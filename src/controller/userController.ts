@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import { connectDatabase } from "../connection/connectDb";
-import type { User } from "../libs/types";
+import type { Login, User } from "../libs/types";
 
 const con = connectDatabase();
 
@@ -26,11 +26,9 @@ export const createUser = async (req: Request, res: Response) => {
           console.log("Unable to create user", err);
           return res.status(500).json({ message: "Unable to create user" });
         }
-      } else {
-        console.log("User created", result);
-        return res.status(200).send({ message: "User created successfully!" });
       }
-      con.end();
+      console.log("User created", result);
+      return res.status(200).send({ message: "User created successfully!" });
     });
   } catch (error) {
     console.log(error);
@@ -53,10 +51,46 @@ export const getUser = async (req: Request, res: Response) => {
         const users = result.map((user) => user);
         return res.status(200).json(users);
       }
-      con.end();
     });
   } catch (err) {
     console.error(err);
   }
 };
 // ------------------------------------GET USER END---------------------------------------------//
+
+// ------------------------------------LOGIN USER---------------------------------------------//
+export const loginUser = async (req: Request, res: Response) => {
+  const { email, password }: Login = req.body;
+
+  try {
+    const query = "SELECT * FROM user";
+
+    con.query(query, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+
+      if (Array.isArray(result)) {
+        const users: Login[] = result.map((r) => r);
+        let isLoggedIn: boolean = false;
+
+        users.map((user) => {
+          if (user?.email === email && user?.password === password) {
+            isLoggedIn = true;
+          }
+        });
+
+        if (isLoggedIn) {
+          return res.status(200).json({ message: "User logged in!" });
+        } else {
+          return res.status(401).json({ message: "Wrong email or password" });
+        }
+      }
+      con.end();
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+// ------------------------------------LOGIN USER END---------------------------------------------//

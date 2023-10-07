@@ -47,7 +47,6 @@ export const createPost = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Server Error" });
   }
 
-  con.end();
 };
 
 export const getPost = async (req: Request, res: Response) => {
