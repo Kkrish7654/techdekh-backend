@@ -7,7 +7,7 @@ const con = connectDatabase();
 //generate slug
 function generateSlug(title: string) {
   return title
-    .toLowerCase() // Convert to lowercase
+    ?.toLowerCase() // Convert to lowercase
     .replace(/\s+/g, "-") // Replace spaces with hyphens
     .replace(/[^a-zA-Z0-9-]/g, "") // Remove non-alphanumeric characters (except hyphens)
     .substring(0, 50); // Limit the slug to a reasonable length
@@ -18,12 +18,19 @@ export const createPost = async (req: Request, res: Response) => {
     const { id, title, description, author, datepPosted }: postData = req.body;
     const slug = generateSlug(title);
 
+    // Check if a file was uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const thumbnail = req.file.filename;
+
     const query =
-      "INSERT INTO mycollection (id, title, description, author, datepPosted, slug) VALUES (?, ?, ?, ?, ?, ?)";
+      "INSERT INTO mycollection (id, title, description, author, datepPosted, slug, thumbnail) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     con.query(
       query,
-      [id, title, description, author, datepPosted, slug],
+      [id, title, description, author, datepPosted, slug, thumbnail],
       (err, result) => {
         if (err) {
           console.error("Failed to insert data:", err);
@@ -46,7 +53,6 @@ export const createPost = async (req: Request, res: Response) => {
     console.error(error);
     return res.status(500).json({ message: "Server Error" });
   }
-
 };
 
 export const getPost = async (req: Request, res: Response) => {

@@ -1,10 +1,11 @@
 export interface postData {
-  id: string;
+  id: number;
   title: string;
   description: string;
   author: string;
   datepPosted: string;
   slug: string;
+  thumbnail: string;
 }
 
 export interface User {

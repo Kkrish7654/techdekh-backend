@@ -10,6 +10,7 @@ app.use(cors())
 app.use(express.json());
 app.use(bodyParser.json())
 app.use(router);
+app.use(express.static('public'));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("hellsinckjnwkng")
